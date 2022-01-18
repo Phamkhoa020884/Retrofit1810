@@ -10,31 +10,39 @@ import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-
 public class RetrofitClient {
-    private static RetrofitClient instance= null;
-    private RetrofitClient retrofitClient;
-    private RetrofitClient(){
+    private static RetrofitClient instance = null;
+    private Retrofit retrofit;
+    private ApiRequest apiRequest;
 
+    private RetrofitClient(){
+        retrofit = createRetrofit();
+        apiRequest= retrofit.create(ApiRequest.class);
     }
+
     public static RetrofitClient instance(){
-        if(instance==null){
-            instance= new RetrofitClient();
+        if (instance == null){
+            instance = new RetrofitClient();
         }
-        return instance;
+        return  instance;
     }
+    public ApiRequest getRequest(){
+        return apiRequest;
+    }
+
 
     private Retrofit createRetrofit(){
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .readTimeout(30, TimeUnit.SECONDS)
-                .writeTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30 , TimeUnit.SECONDS)
                 .retryOnConnectionFailure(true)
                 .protocols(Arrays.asList(Protocol.HTTP_1_1))
                 .build();
-        Gson gson= new GsonBuilder().setLenient().create();
-        //https://api.openweathermap.org/data/2.5/weather?appid=57f262786122665cbe313bc17c68c604&units=metric&q=Hanoi
+
+        Gson gson = new GsonBuilder().setLenient().create();
+
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.openweathermap.org")
+                .baseUrl("http://api.openweathermap.org/")
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
